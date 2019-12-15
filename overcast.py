@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import os
+import sys
 import requests
 from argparse import ArgumentParser
 import xml.etree.ElementTree as ET
@@ -99,12 +100,12 @@ def main(do_download):
     cache = __file__.replace('.py', '.opml')
     if do_download and not rate_limited(cache):
         opml = download(cfg)
-        logging.info("Downloaded latest episode activity.")
+        logging.debug("Downloaded latest episode activity.")
         with open(cache, "w", encoding="utf-8") as f:
             f.write(opml)
         root = ET.fromstring(bytes(opml, encoding="utf-8"))
     else:
-        logging.info("Using cached episode activity.")
+        logging.debug("Using cached episode activity.")
         root = ET.parse(cache)
 
     episodes = list()
@@ -122,8 +123,14 @@ def main(do_download):
 if __name__ == '__main__':
     parser = ArgumentParser(description="Make a podcast activity feed.")
     parser.add_argument('-n', '--nodownload', action='store_true')
+    parser.add_argument('-o', '--outfile')
     args = parser.parse_args()
-    logging.basicConfig(format='%(asctime)s %(message)s',
+    if args.outfile is None:
+        handler = logging.StreamHandler(sys.stdout)
+    else:
+        handler = logging.FileHandler(args.outfile)
+    logging.basicConfig(handlers=(handler,),
+                        format='%(asctime)s %(message)s',
                         datefmt='%Y-%m-%d %H:%M',
                         level=logging.INFO)
     main(not args.nodownload)
