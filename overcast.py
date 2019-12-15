@@ -2,7 +2,7 @@
 import os
 import requests
 from argparse import ArgumentParser
-from lxml import etree
+import xml.etree.ElementTree as ET
 from xml.sax.saxutils import escape
 import cfgreader
 import logging
@@ -83,6 +83,15 @@ def rate_limited(fname):
         return False
 
 
+def add_episode(ep):
+    """Returns True if the episode should be added to the list."""
+    if 'played' in ep.attrib:
+        return True
+    else:
+        # progress is number of seconds played. Let's say 5min counts.
+        return int(ep.attrib['progress']) > 60 * 5
+
+
 def main(do_download):
     """The main function, does the whole thing."""
     start_time = time.time()
@@ -93,17 +102,18 @@ def main(do_download):
         logging.info("Downloaded latest episode activity.")
         with open(cache, "w", encoding="utf-8") as f:
             f.write(opml)
-        root = etree.fromstring(bytes(opml, encoding="utf-8"))
+        root = ET.fromstring(bytes(opml, encoding="utf-8"))
     else:
         logging.info("Using cached episode activity.")
-        root = etree.parse(cache)
+        root = ET.parse(cache)
 
     episodes = list()
-    for rss in root.xpath('//outline[@type="rss"]'):
-        rss_title = rss.get('title')
-        for ep in rss.xpath('outline[@type="podcast-episode" and @played="1"]'):
-            episodes.append(Episode(rss_title, ep.get('title'), ep.get('url'),
-                                    ep.get('overcastUrl'), ep.get('userUpdatedDate')))
+    for rss in root.findall('.//outline[@type="rss"]'):
+        rss_title = rss.attrib['title']
+        for ep in rss.findall('outline[@type="podcast-episode"]'):
+            if add_episode(ep):
+                episodes.append(Episode(rss_title, ep.attrib['title'], ep.attrib['url'],
+                    ep.attrib['overcastUrl'], ep.attrib['userUpdatedDate']))
     episodes.sort(reverse=True)
     update_status = write_feed(episodes, cfg)
     logging.info(f"{time.time() - start_time:2.0f}s {update_status}")
