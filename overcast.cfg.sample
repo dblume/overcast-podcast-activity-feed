@@ -1,0 +1,7 @@
+[main]
+username = user@example.org
+password = correcthorsebatterystaple
+[feed]
+filename = podcast_activity.xml
+href = http://domain.org/%(filename)s
+title = My Overcast Podcast Activity Feed
