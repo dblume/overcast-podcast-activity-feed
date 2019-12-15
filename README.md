@@ -7,14 +7,24 @@ You can create a podcast activity feed with this script. Activity feeds are
 records of the things you've done. In this case, it's a list of podcast episodes
 you've listened to.  It is similar to a last.fm Scrobble feed.
 
-Activity feeds can be used to collect data for lifestreaming and the Quantified
-Self. You can do whatever you want with it, it's your life and your data.
+Activity feeds can be used to collect data for lifestreaming and for the Quantified
+Self projects.
+
+Many thanks to [Overcast.fm](https://overcast.fm/) for granting its users access
+to their data.
 
 ## Getting Started
 
 1. Rename overcast.cfg.sample to overcast.cfg.
 2. Customize the variables in overcast.cfg. (More on this below.)
 3. Set up a cronjob that runs overcast.py once every day.
+
+You can specify an output file for logs with the -o flag, like so:
+
+    ./overcast.py -o overcast.log
+
+The feed will be written to the filename specified in overcast.cfg, in this
+example, it'd be an RSS feed named "podcast-activity.xml"
 
 ## How it works
 
@@ -40,6 +50,10 @@ The configuration file looks like this:
 
 Replace username and password with your Overcast username and password. Set the
 feed filename, location, and title as you like.
+
+## An example feed
+
+Here's [an example feed](http://feed.dlma.com/overcast.xml). It [meets RSS validation requirements](https://validator.w3.org/feed/check.cgi?url=http%3A//feed.dlma.com/overcast.xml). &check;
 
 ## Is it any good?
 
