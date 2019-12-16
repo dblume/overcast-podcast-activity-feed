@@ -51,6 +51,17 @@ The configuration file looks like this:
 Replace username and password with your Overcast username and password. Set the
 feed filename, location, and title as you like.
 
+### Protect your password
+
+If overcast.cfg is present on your server that's serving the RSS feed, be sure
+to deny access to it. If you have a .htaccess file, you can do so with
+
+    <Files ~ "\.cfg$">
+    Order allow,deny
+    Deny from all
+    </Files>
+
+
 ## An example feed
 
 Here's [an example feed](http://feed.dlma.com/overcast.xml). It [meets RSS validation requirements](https://validator.w3.org/feed/check.cgi?url=http%3A//feed.dlma.com/overcast.xml). &check;
