@@ -11,12 +11,13 @@ import time
 
 
 class Episode:
-    def __init__(self, podcast, title, url, guid, date):
+    def __init__(self, podcast, title, url, guid, date, partial):
         self.podcast = podcast
         self.title = title
         self.url = url
         self.guid = guid
         self.date = date
+        self.partial = partial
 
     def __lt__(self, other):
         return self.date < other.date
@@ -89,8 +90,8 @@ def add_episode(ep):
     if 'played' in ep.attrib:
         return True
     else:
-        # progress is number of seconds played. Let's say 5min counts.
-        return int(ep.attrib['progress']) > 60 * 5
+        # progress is number of seconds played. Let's say 7min counts.
+        return int(ep.attrib['progress']) > 60 * 7
 
 
 def main(do_download):
@@ -114,8 +115,16 @@ def main(do_download):
         for ep in rss.findall('outline[@type="podcast-episode"]'):
             if add_episode(ep):
                 episodes.append(Episode(rss_title, ep.attrib['title'], ep.attrib['url'],
-                    ep.attrib['overcastUrl'], ep.attrib['userUpdatedDate']))
+                    ep.attrib['overcastUrl'], ep.attrib['userUpdatedDate'],
+                    'progress' in ep.attrib))
     episodes.sort(reverse=True)
+
+    # I'm seeing too many duplicate partial posts. Experiment: Try not listing
+    # the most recent episode if it has only been partially heard.
+    # It'll likely get listed later.
+    if episodes[0].partial:
+        episodes.pop(0)
+
     update_status = write_feed(episodes, cfg)
     logging.info(f"{time.time() - start_time:2.0f}s {update_status}")
 
