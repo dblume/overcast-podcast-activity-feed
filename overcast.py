@@ -25,11 +25,14 @@ class Episode:
     def __str__(self):
         return f"podcast={self.podcast}, title:{self.title}, date:{self.date}"
 
+    def std_date(self):
+        """If necessary convert %z timezone from '-04:00' to '-0400'."""
+        if self.date[-6] in ('-', '+') and self.date[-3] == ':':
+            return self.date[:-3] + self.date[-2:]
+        return self.date
+
     def rss(self):
-        date = self.date
-        # Convert %z timezone from "-04:00" to "-0400"
-        if date[-6] in ('-', '+') and date[-3] == ':':
-            date = date[:-3] + date[-2:]
+        date = self.std_date()
         t = time.strptime(date, "%Y-%m-%dT%H:%M:%S%z")
         date = time.strftime("%a, %d %b %Y %H:%M:%S " + date[-5:], t)
         return (f"<item>"
@@ -39,6 +42,31 @@ class Episode:
                 f"<guid isPermaLink=\"true\">{self.guid}</guid>"
                 f"<description><![CDATA[{self.podcast}: {self.title} on {date}]]></description>"
                 f"</item>\n")
+
+
+def reconcile_with_feed(episodes, feed):
+    """An episode might've already been published in the feed, and then
+    have a later timestamp in this list of episodes. When that happens,
+    retain the already published information."""
+    r = requests.get(feed)
+    if not r.ok:
+        return episodes
+    root = ET.fromstring(r.text)
+    dates = dict()  # guid to pubDate
+    for i in root.findall('./channel/item'):
+        pubDate = i.findtext('pubDate')
+        date = time.strptime(pubDate[5:-6], "%d %b %Y %H:%M:%S")
+        guid = i.findtext('guid')
+        dates[guid] = time.strftime("%Y-%m-%dT%H:%M:%S" + pubDate[-5:], date)
+
+    episode_changed = False
+    for episode in episodes:
+        if episode.guid in dates and dates[episode.guid] != episode.std_date():
+            episode.date = dates[episode.guid]
+            episode_changed = True
+    if episode_changed:
+        episodes.sort(reverse=True)
+    return episodes
 
 
 def download(cfg):
@@ -69,7 +97,7 @@ def write_feed(episodes, cfg):
                 f'<title>{cfg.feed.title}</title>'
                 f'<link>https://overcast.fm</link><pubDate>{now}</pubDate>'
                 f'<description>{cfg.feed.title}</description><language>en-us</language>\n')
-        for e in episodes[:20]:
+        for e in episodes:
             f.write(e.rss())
         f.write("</channel></rss>\n")
     return update_status
@@ -124,6 +152,8 @@ def main(do_download):
     # It'll likely get listed later.
     if episodes[0].partial:
         episodes.pop(0)
+
+    episodes = reconcile_with_feed(episodes[:20], cfg.feed.href)
 
     update_status = write_feed(episodes, cfg)
     logging.info(f"{time.time() - start_time:2.0f}s {update_status}")
