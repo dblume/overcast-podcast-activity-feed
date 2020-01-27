@@ -1,7 +1,7 @@
 try:
-    import configparser
-except ModuleNotFoundError:
     import ConfigParser as configparser
+except ModuleNotFoundError:
+    import configparser
 
 
 class CfgReader(object):

@@ -1,9 +1,9 @@
-[![License](https://img.shields.io/badge/license-MIT_license-blue.svg)](https://raw.githubusercontent.com/dblume/md-reader/master/LICENSE.txt)
+[![License](https://img.shields.io/badge/license-MIT_license-blue.svg)](https://raw.githubusercontent.com/dblume/overcast-podcast-activity-feed/master/LICENSE.txt)
 ![python3.x](https://img.shields.io/badge/python-3.x-green.svg)
 
 ## Overcast Podcast Activity Feed
 
-You can create a podcast activity feed with this script. Activity feeds are 
+You can create a podcast activity feed with this script. Activity feeds are
 records of the things you've done. In this case, it's a list of podcast episodes
 you've listened to.  It is similar to a last.fm Scrobble feed.
 
