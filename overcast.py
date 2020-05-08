@@ -38,7 +38,7 @@ class Episode:
         return (f"<item>"
                 f"<title>{escape(self.podcast)}: {escape(self.title)}</title>"
                 f"<pubDate>{date}</pubDate>"
-                f"<link>{self.url}</link>"
+                f"<link>{escape(self.url)}</link>"
                 f"<guid isPermaLink=\"true\">{self.guid}</guid>"
                 f"<description><![CDATA[{self.podcast}: {self.title} on {date}]]></description>"
                 f"</item>\n")
