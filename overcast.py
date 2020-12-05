@@ -117,9 +117,12 @@ def add_episode(ep):
     """Returns True if the episode should be added to the list."""
     if 'played' in ep.attrib:
         return True
-    else:
+    elif 'progress' in ep.attrib:
         # progress is number of seconds played. Let's say 7min counts.
         return int(ep.attrib['progress']) > 60 * 7
+    # Neither played nor any progress? Let's not add this one yet.
+    logging.warn(f"{ep.attrib['overcastId']}: \"{ep.attrib['title']}\" was neither played nor had progress.")
+    return False
 
 
 def main(do_download):
