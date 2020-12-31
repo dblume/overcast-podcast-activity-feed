@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 import os
 import sys
 import requests
@@ -8,6 +9,7 @@ from xml.sax.saxutils import escape
 import cfgreader
 import logging
 import time
+from typing import List
 
 
 class Episode:
@@ -19,19 +21,19 @@ class Episode:
         self.date = date
         self.partial = partial
 
-    def __lt__(self, other):
+    def __lt__(self, other: Episode) -> bool:
         return self.date < other.date
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"podcast={self.podcast}, title:{self.title}, date:{self.date}"
 
-    def std_date(self):
+    def std_date(self) -> str:
         """If necessary convert %z timezone from '-04:00' to '-0400'."""
         if self.date[-6] in ('-', '+') and self.date[-3] == ':':
             return self.date[:-3] + self.date[-2:]
         return self.date
 
-    def rss(self):
+    def rss(self) -> str:
         date = self.std_date()
         t = time.strptime(date, "%Y-%m-%dT%H:%M:%S%z")
         date = time.strftime("%a, %d %b %Y %H:%M:%S " + date[-5:], t)
@@ -44,7 +46,7 @@ class Episode:
                 f"</item>\n")
 
 
-def reconcile_with_feed(episodes, feed):
+def reconcile_with_feed(episodes: List[Episode], feed: str) -> List[Episode]:
     """An episode might've already been published in the feed, and then
     have a later timestamp in this list of episodes. When that happens,
     retain the already published information."""
@@ -69,7 +71,7 @@ def reconcile_with_feed(episodes, feed):
     return episodes
 
 
-def download(cfg):
+def download(cfg: cfgreader.CfgReader) -> str:
     """Downloads a custom OPML file from overcast.fm"""
     payload = {
         "email": cfg.main.username,
@@ -86,7 +88,7 @@ def download(cfg):
     return opml.text
 
 
-def write_feed(episodes, cfg):
+def write_feed(episodes: List[Episode], cfg) -> str:
     update_status = "OK"
     now = time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime())
     with open(cfg.feed.filename, "w", encoding="utf-8") as f:
@@ -103,7 +105,7 @@ def write_feed(episodes, cfg):
     return update_status
 
 
-def rate_limited(fname):
+def rate_limited(fname: str) -> bool:
     """Returns true if we wrote to the file too recently."""
     try:
         mtime_sec = os.path.getmtime(fname)
@@ -113,7 +115,7 @@ def rate_limited(fname):
         return False
 
 
-def add_episode(ep):
+def add_episode(ep: ET.Element) -> bool:
     """Returns True if the episode should be added to the list."""
     if 'played' in ep.attrib:
         return True
@@ -125,7 +127,7 @@ def add_episode(ep):
     return False
 
 
-def main(do_download):
+def main(do_download: bool) -> None:
     """The main function, does the whole thing."""
     start_time = time.time()
     cfg = cfgreader.CfgReader(__file__.replace('.py', '.cfg'))
@@ -140,7 +142,7 @@ def main(do_download):
         logging.debug("Using cached episode activity.")
         root = ET.parse(cache)
 
-    episodes = list()
+    episodes: List[Episode] = list()
     for rss in root.findall('.//outline[@type="rss"]'):
         rss_title = rss.attrib['title']
         for ep in rss.findall('outline[@type="podcast-episode"]'):
