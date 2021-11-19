@@ -1,4 +1,4 @@
-[![License](https://img.shields.io/badge/license-MIT_license-blue.svg)](https://raw.githubusercontent.com/dblume/overcast-podcast-activity-feed/master/LICENSE.txt)
+[![License](https://img.shields.io/badge/license-MIT_license-blue.svg)](https://raw.githubusercontent.com/dblume/overcast-podcast-activity-feed/main/LICENSE.txt)
 ![python3.x](https://img.shields.io/badge/python-3.x-green.svg)
 
 ## Overcast Podcast Activity Feed
