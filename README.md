@@ -15,9 +15,10 @@ to their data.
 
 ## Getting Started
 
-1. Rename overcast.cfg.sample to overcast.cfg.
-2. Customize the variables in overcast.cfg. (More on this below.)
-3. Set up a cronjob that runs overcast.py once every day.
+1. Install the required module(s):  `python3 -m pip install -r requirements.txt`
+2. Rename overcast.cfg.sample to overcast.cfg.
+3. Customize the variables in overcast.cfg. (More on this below.)
+4. Set up a cronjob that runs overcast.py once every day.
 
 You can specify an output file for logs with the -o flag, like so:
 

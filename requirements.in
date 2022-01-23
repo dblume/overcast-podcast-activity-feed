@@ -1,0 +1,10 @@
+# To use this file to make requirements.txt, install pip-tools:
+#
+#     (venv) $ python3 -m pip install pip-tools
+#     (venv) $ pip-compile requirements.in
+#
+# Otherwise, you can make requirements.txt directly with pip freeze:
+#
+#     (venv) $ python3 -m pip freeze > requirements.txt
+#
+requests
