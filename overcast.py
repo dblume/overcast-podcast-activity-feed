@@ -16,7 +16,7 @@ from typing import List
 __author__ = "David Blume"
 __copyright__ = "Copyright 2019-2022, David Blume"
 __license__ = "MIT"
-__version__  "1.0"
+__version__ = "1.0"
 
 class Episode:
     def __init__(self, podcast, title, url, guid, date, partial):
