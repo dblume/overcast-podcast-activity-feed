@@ -174,6 +174,7 @@ if __name__ == '__main__':
     parser = ArgumentParser(description="Make a podcast activity feed.")
     parser.add_argument('-n', '--nodownload', action='store_true')
     parser.add_argument('-o', '--outfile')
+    parser.add_argument('-v', '--verbose', action='store_true')
     args = parser.parse_args()
     if args.outfile is None:
         handler = logging.StreamHandler(sys.stdout)
@@ -182,5 +183,5 @@ if __name__ == '__main__':
     logging.basicConfig(handlers=(handler,),
                         format='%(asctime)s %(message)s',
                         datefmt='%Y-%m-%d %H:%M',
-                        level=logging.INFO)
+                        level=logging.DEBUG if args.verbose else logging.INFO)
     main(not args.nodownload)
