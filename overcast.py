@@ -128,8 +128,11 @@ def add_episode(ep: ET.Element) -> bool:
     elif 'progress' in ep.attrib:
         # progress is number of seconds played. Let's say 7min counts.
         return int(ep.attrib['progress']) > 60 * 7
-    # Neither played nor any progress? Let's not add this one yet.
-    logging.warn(f"{ep.attrib['overcastId']}: \"{ep.attrib['title']}\" was neither played nor had progress.")
+    elif 'userDeleted' in ep.attrib:
+        return False
+    # Neither played nor deleted nor any progress? Let's not add this one yet.
+    logging.warning(f"{ep.attrib['overcastId']}: \"{ep.attrib['title']}\" was neither played nor had progress.")
+    logging.warning(f'Attributes were: {",".join(ep.attrib.keys())}')
     return False
 
 
