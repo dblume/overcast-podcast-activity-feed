@@ -1,8 +1,4 @@
-try:
-    import ConfigParser as configparser
-except ModuleNotFoundError:
-    import configparser
-
+import configparser
 
 class CfgReader(object):
     """
@@ -23,9 +19,9 @@ class CfgReader(object):
             raise Exception("This object is read only")
 
     def __init__(self, cfg_filename):
-        config = configparser.SafeConfigParser()
+        config = configparser.ConfigParser()
         with open(cfg_filename, "r") as f:
-            config.readfp(f)
+            config.read_file(f)
 
         for section in config.sections():
             s = CfgReader.Section()
