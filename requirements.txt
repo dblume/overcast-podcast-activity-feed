@@ -8,9 +8,9 @@ certifi==2024.7.4
     # via requests
 charset-normalizer==2.0.10
     # via requests
-idna==3.3
-    # via requests
-requests==2.31.0
+idna=>3.7
+    # via dependabot CVE-2024-3651
+requests=>2.31.0
     # via -r requirements.in
-urllib3==2.6.0
+urllib3=>2.6.0
     # via dependabot CVE-2025-66471
