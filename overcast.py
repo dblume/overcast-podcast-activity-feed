@@ -85,11 +85,11 @@ def download(cfg: cfgreader.CfgReader) -> str:
         "then": "account"}
     url_base = "https://overcast.fm/"
     with requests.Session() as session:
-        r = session.post(url_base + "login", data=payload,
-                         headers={'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'})
+        r = session.post(url_base + "login", data=payload)
         if not r.ok:
             raise Exception("Could not login. " + r.reason)
-        opml = session.get(url_base + "account/export_opml/extended")
+        opml = session.get(url_base + "account/export_opml/extended",
+                           headers={'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'})
         if not opml.ok:
             raise Exception("Could not get opml. " + opml.reason)
     return opml.text
